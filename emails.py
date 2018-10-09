@@ -1,12 +1,12 @@
-import httplib2
-
 from email.encoders import encode_base64
-from apiclient import discovery
 from oauth2client import client, tools, file
 import base64
 from email.mime.text import MIMEText
 import mimetypes
 import os
+from apiclient import discovery
+import httplib2
+
 
 from apiclient import errors
 
@@ -16,12 +16,9 @@ try:
 except ImportError:
     flags = None
 
-# If modifying these scopes, delete your previously saved credentials
-# at ~/.credentials/gmail-python-quickstart.json
-SCOPES = 'https://mail.google.com/'
+SCOPES = 'https://www.googleapis.com/auth/gmail.send'
 CLIENT_SECRET_FILE = 'credentials.json'
-APPLICATION_NAME = 'Gmail API Python Quickstart'
-
+APPLICATION_NAME = 'Subreddit Scraper'
 
 def get_credentials():
     """Gets valid user credentials from storage.
@@ -51,6 +48,9 @@ def get_credentials():
         print('Storing credentials to ' + credential_path)
     return credentials
 
+def get_service(credentials):
+    http = credentials.authorize(httplib2.Http())
+    return discovery.build('gmail', 'v1', http=http)
 
 def create_message(sender, to, subject, message_text):
   """Create a message for an email.
@@ -89,20 +89,3 @@ def send_message(service, user_id, message):
     return message
   except errors.HttpError as error:
     print('An error occurred: %s' % error)
-
-
-
-def main():
-    credentials = get_credentials()
-    http = credentials.authorize(httplib2.Http())
-    service = discovery.build('gmail', 'v1', http=http)
-    
-    sender = 'me'
-    to = 'christopher.j.sparling@gmail.com'
-    subject = 'Testing'
-    body = 'Testing Body'
-    msg = create_message(sender, to, subject, body)
-    send_message(service, 'me',msg)
-
-if __name__ == '__main__':
-    main()
