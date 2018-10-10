@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup as bs
 import requests as rq
 import example_html as exam
 import templates as tmp
+from time import sleep
 """
 Functions:
 get_top() - get top posts from subreddit
@@ -50,6 +51,7 @@ def get_top(subreddits, sort='day'):
             text = links[counter].find('h2', class_='s56cc5r-0').text
             subr_dict[sr].append([' '.join(text.split()), item['href']])
 
+        sleep(5)
     print(subr_dict)
     return subr_dict
 
