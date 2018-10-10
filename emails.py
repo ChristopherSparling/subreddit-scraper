@@ -2,6 +2,7 @@ from email.encoders import encode_base64
 from oauth2client import client, tools, file
 import base64
 from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 import mimetypes
 import os
 from apiclient import discovery
@@ -64,10 +65,12 @@ def create_message(sender, to, subject, message_text):
   Returns:
     An object containing a base64url encoded email object.
   """
-  message = MIMEText(message_text)
+  message = MIMEMultipart('alternative')
   message['to'] = to
   message['from'] = sender
   message['subject'] = subject
+  html = MIMEText(message_text,'html')
+  message.attach(html)
   return {'raw': base64.urlsafe_b64encode(message.as_string().encode('UTF-8')).decode('ascii')}
 
 def send_message(service, user_id, message):
