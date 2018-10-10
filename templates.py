@@ -2,6 +2,7 @@ main= """\
     <html>
         <head></head>
         <body>
+        <h1> Testing %s</h1>
         %s
         </body>
     </html>    
@@ -9,9 +10,7 @@ main= """\
 
 section= """\
     <div>
-        <h1>%s</h1>
-        %s
-        %s
+        <h2>r/%s</h2>
         %s
         <hr>
     </div>

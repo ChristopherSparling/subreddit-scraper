@@ -23,14 +23,45 @@ def get_top(subreddits, sort='day'):
     """ Gets top 3 entries from specified subreddit based on sort
     
     Args:
-    subreddit - subreddit to extract posts from [list]
-    sort - sorting of subreddit posts to apply
+      subreddit - subreddit to extract posts from [list]
+      sort - sorting of subreddit posts to apply
 
     Returns:
       Dictionary of subreddits with list of lists as value 
     """
-    
-# def format_title(text):
+    # temp = 'https://us6.proxysite.com/process.php?d=q9Dy%2BJkZhKqpXas9Pb4rSGZ%2ByCeziWn6hMVdrD9dolRaN1GBfajFnttSFqyi1An0LN4vgWSWh8Q%3D&b=1&f=norefer'
+
+    subr_dict = {}
+
+    # Populate dictionary
+    for sr in subreddits:
+        soup = bs(rq.get(BASE + sr + SUFFIX + sort), 'html5lib')
+        subr_dict[sr] = []
+
+        # Extract and format 3 titles 
+        # headers = soup.find_all('h2',class_='s56cc5r-0', limit=3)
+        # for item in headers:
+            # subr_dict[sr].append([])
+
+        # Extract links to items
+        links = soup.find_all('a',class_='SQnoC3ObvgnGjWt90zD9Z', limit=3)
+        for counter,item in enumerate(links):
+            # links[counter] = item['href']
+            text = links[counter].find('h2', class_='s56cc5r-0').text
+            subr_dict[sr].append([' '.join(text.split()), item['href']])
+
+    print(subr_dict)
+    return subr_dict
+
+# def fetch_page(subreddit):
+#     """ Requests and processes web page
+#     Args:
+#       url - url of page to fetch and process
+#     Returns:
+#       bs object of web page
+#     """
+#     return bs(rq.get(BASE + subreddit + SUFFIX ), 'html5lib')
+
 
 def format_main(subreddit_dict):
     """ Populates HTML string for message body using section templates
@@ -56,28 +87,11 @@ def main():
     credentials = em.get_credentials()
     service = em.get_service(credentials)
 
-    # temp = 'https://us6.proxysite.com/process.php?d=q9Dy%2BJkZhKqpXas9Pb4rSGZ%2ByCeziWn6hMVdrD9dolRaN1GBfajFnttSFqyi1An0LN4vgWSWh8Q%3D&b=1&f=norefer'
-    # temp = 'https://us6.proxysite.com/process.php?d=q9Dy%2BJkZhKqpXas9Pb4rSGZ%2ByCeziWn6hMVdrD9dolRaN1GB&b=1&f=norefer'
-    # data = rq.get(BASE + SUBREDDITS[0] + SUFFIX)
-    # data = rq.get(temp)
-    soup = bs(exam.document, 'html5lib')
-    # print(soup.prettify())
-
-    # Extract and format 3 titles 
-    headers = soup.find_all('h2',class_='s56cc5r-0', limit=3)
-    for counter, item in enumerate(headers):
-        headers[counter] = ' '.join(item.text.split())
-        print(headers[counter])
-    # Extract links to items
-    links = soup.find_all('a',class_='SQnoC3ObvgnGjWt90zD9Z', limit=3)
-    for counter,item in enumerate(links):
-        links[counter] = item['href']
-
     sender = 'me'
     to = 'christopher.sparling@litens.com'
     subject = 'Testing'
-    
-
+    subr_dict = get_top(SUBREDDITS)
+    body = format_main(subr_dict)
     msg = em.create_message(sender, to, subject, body)
     em.send_message(service, 'me',msg)
 
